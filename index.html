@@ -8,21 +8,33 @@
 
 <style>
 
+:root{
+    --bg:#f3f7fb;
+    --card:#ffffff;
+    --primary:#2563eb;
+    --primary-soft:#dbeafe;
+    --text:#111827;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+    --green:#10b981;
+    --shadow:0 15px 40px rgba(0,0,0,0.05);
+}
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
 }
 
 body{
-    background:#f4f7fb;
-    color:#1f2937;
+    background:var(--bg);
+    color:var(--text);
     padding:30px;
 }
 
 .container{
-    max-width:1200px;
+    max-width:1300px;
     margin:auto;
 }
 
@@ -31,27 +43,28 @@ body{
 }
 
 .hero h1{
-    font-size:40px;
+    font-size:42px;
     margin-bottom:10px;
 }
 
 .hero p{
-    color:#6b7280;
+    color:var(--muted);
     font-size:18px;
+    line-height:1.6;
 }
 
 .card{
-    background:white;
-    border-radius:24px;
-    padding:30px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+    background:var(--card);
+    border-radius:28px;
+    padding:35px;
+    box-shadow:var(--shadow);
     margin-bottom:25px;
 }
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:22px;
 }
 
 .field{
@@ -60,121 +73,122 @@ body{
 }
 
 .field label{
-    margin-bottom:8px;
-    color:#4b5563;
+    margin-bottom:10px;
     font-size:14px;
+    color:#374151;
+    font-weight:600;
 }
 
 .field input{
-    padding:15px;
-    border-radius:14px;
-    border:1px solid #dbe2ea;
-    background:#f9fbfd;
+    height:58px;
+    border-radius:16px;
+    border:1px solid var(--border);
+    padding:0 18px;
+    background:#f9fbff;
     font-size:16px;
     transition:0.2s;
 }
 
 .field input:focus{
     outline:none;
-    border-color:#2563eb;
+    border-color:var(--primary);
     background:white;
+}
+
+.field input::placeholder{
+    color:#9ca3af;
 }
 
 button{
     width:100%;
-    margin-top:30px;
-    padding:18px;
+    margin-top:32px;
+    height:60px;
     border:none;
-    border-radius:16px;
-    background:#2563eb;
+    border-radius:18px;
+    background:var(--primary);
     color:white;
     font-size:16px;
+    font-weight:bold;
     cursor:pointer;
     transition:0.2s;
 }
 
 button:hover{
-    transform:translateY(-1px);
+    transform:translateY(-2px);
 }
 
 .results{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:22px;
     margin-bottom:25px;
 }
 
 .result-card{
     background:white;
-    padding:25px;
-    border-radius:22px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+    border-radius:26px;
+    padding:28px;
+    box-shadow:var(--shadow);
 }
 
 .result-card span{
-    color:#6b7280;
+    color:var(--muted);
     font-size:14px;
 }
 
 .result-card h2{
-    margin-top:10px;
-    font-size:32px;
+    margin-top:12px;
+    font-size:34px;
+    line-height:1.2;
 }
 
-.result-card.highlight{
-    background:#2563eb;
+.highlight{
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
     color:white;
 }
 
-.result-card.highlight span{
+.highlight span{
     color:rgba(255,255,255,0.8);
 }
 
 .section-title{
-    font-size:22px;
-    margin-bottom:20px;
+    font-size:24px;
+    margin-bottom:25px;
 }
 
 table{
     width:100%;
     border-collapse:collapse;
-    margin-top:10px;
 }
 
 th{
     text-align:left;
-    background:#eef3ff;
-    padding:16px;
-    color:#374151;
+    padding:18px;
+    background:#eff6ff;
+    color:#1e3a8a;
 }
 
 td{
-    padding:16px;
-    border-bottom:1px solid #edf1f5;
+    padding:18px;
+    border-bottom:1px solid #eef2f7;
 }
 
-.tag{
-    display:inline-block;
-    padding:8px 14px;
-    border-radius:999px;
-    background:#eef4ff;
-    color:#2563eb;
-    font-weight:bold;
-    margin-top:15px;
-}
-
-.note{
-    margin-top:20px;
-    color:#6b7280;
-    line-height:1.6;
+.info-box{
+    margin-top:25px;
+    padding:20px;
+    border-radius:18px;
+    background:#f8fbff;
+    border:1px solid #e8eef7;
+    color:#4b5563;
+    line-height:1.7;
 }
 
 .chart{
-    margin-top:30px;
-    height:300px;
+    margin-top:35px;
+    height:320px;
     display:flex;
     align-items:flex-end;
-    gap:20px;
+    gap:25px;
 }
 
 .bar-wrapper{
@@ -184,41 +198,42 @@ td{
 
 .bar{
     width:100%;
-    border-radius:16px 16px 0 0;
+    border-radius:20px 20px 0 0;
     transition:0.4s;
 }
 
-.bar.invest{
-    background:#2563eb;
+.bar-invest{
+    background:linear-gradient(to top,#2563eb,#60a5fa);
 }
 
-.bar.amort{
-    background:#10b981;
+.bar-amort{
+    background:linear-gradient(to top,#059669,#34d399);
 }
 
 .bar-label{
-    margin-top:10px;
+    margin-top:12px;
     font-size:14px;
+    color:#374151;
 }
 
-.storage-info{
+.storage{
     margin-top:18px;
     color:#64748b;
     font-size:14px;
 }
 
-@media(max-width:700px){
+@media(max-width:768px){
 
     body{
         padding:18px;
     }
 
     .hero h1{
-        font-size:32px;
+        font-size:34px;
     }
 
     .card{
-        padding:22px;
+        padding:24px;
     }
 
 }
@@ -230,12 +245,14 @@ td{
 <div class="container">
 
     <section class="hero">
+
         <h1>Simulador Inteligente</h1>
 
         <p>
-            Compare automaticamente se vale mais a pena
-            investir ou amortizar seu financiamento.
+            Descubra automaticamente se vale mais a pena
+            investir seu dinheiro ou amortizar seu financiamento.
         </p>
+
     </section>
 
     <section class="card">
@@ -243,42 +260,55 @@ td{
         <div class="grid">
 
             <div class="field">
-                <label>Saldo devedor (R$)</label>
-                <input type="number" id="saldo">
+                <label>Saldo devedor atual</label>
+                <input type="number" id="saldo"
+                placeholder="Ex: 190000">
+            </div>
+
+            <div class="field">
+                <label>Parcela mensal atual</label>
+                <input type="number" id="parcela"
+                placeholder="Ex: 1159">
             </div>
 
             <div class="field">
                 <label>Juros do financiamento (% ao ano)</label>
-                <input type="number" id="jurosFin">
+                <input type="number" id="jurosFin"
+                placeholder="Ex: 6.5">
             </div>
 
             <div class="field">
                 <label>Rentabilidade do investimento (% ao ano)</label>
-                <input type="number" id="jurosInv">
+                <input type="number" id="jurosInv"
+                placeholder="Ex: 12">
             </div>
 
             <div class="field">
-                <label>Aporte mensal extra (R$)</label>
-                <input type="number" id="aporte">
+                <label>Amortização ou aporte mensal</label>
+                <input type="number" id="aporte"
+                placeholder="Ex: 2000">
             </div>
 
             <div class="field">
-                <label>Prazo restante (anos)</label>
-                <input type="number" id="anos">
+                <label>Prazo de análise (anos)</label>
+                <input type="number" id="anos"
+                placeholder="Ex: 7">
             </div>
 
             <div class="field">
                 <label>Inflação anual (%)</label>
-                <input type="number" id="inflacao">
+                <input type="number" id="inflacao"
+                value="6"
+                placeholder="6">
             </div>
 
         </div>
 
         <button onclick="comparar()">
-            Comparar Cenários
+            Comparar Estratégias
         </button>
 
-        <div class="storage-info">
+        <div class="storage">
             Os dados são salvos automaticamente no navegador.
         </div>
 
@@ -287,18 +317,33 @@ td{
     <section class="results">
 
         <div class="result-card">
+
             <span>Patrimônio investindo</span>
-            <h2 id="resultadoInvestimento">R$ 0</h2>
+
+            <h2 id="resultadoInvestimento">
+                —
+            </h2>
+
         </div>
 
         <div class="result-card">
-            <span>Economia amortizando</span>
-            <h2 id="resultadoAmortizacao">R$ 0</h2>
+
+            <span>Total pago ao financiamento</span>
+
+            <h2 id="resultadoAmortizacao">
+                —
+            </h2>
+
         </div>
 
         <div class="result-card highlight">
+
             <span>Melhor estratégia</span>
-            <h2 id="melhorOpcao">—</h2>
+
+            <h2 id="melhorOpcao">
+                —
+            </h2>
+
         </div>
 
     </section>
@@ -306,7 +351,7 @@ td{
     <section class="card">
 
         <h2 class="section-title">
-            Tabela Comparativa
+            Comparativo Patrimonial
         </h2>
 
         <table>
@@ -314,7 +359,7 @@ td{
             <thead>
                 <tr>
                     <th>Estratégia</th>
-                    <th>Resultado estimado</th>
+                    <th>Resultado</th>
                 </tr>
             </thead>
 
@@ -334,25 +379,43 @@ td{
 
         </table>
 
-        <div class="tag">
-            Inflação editável automaticamente
-        </div>
+        <div class="info-box">
 
-        <div class="note">
-            O sistema considera inflação para mostrar
-            projeções mais próximas do poder real de compra.
+            O sistema compara quanto patrimônio você teria ao investir
+            versus quanto dinheiro teria sido utilizado para quitar
+            o financiamento durante o período analisado.
+
+            A inflação é considerada para aproximar os valores
+            do poder real de compra.
+
         </div>
 
         <div class="chart">
 
             <div class="bar-wrapper">
-                <div class="bar invest" id="barInvest"></div>
-                <div class="bar-label">Investir</div>
+
+                <div class="bar bar-invest"
+                id="barInvest"
+                style="height:20px;">
+                </div>
+
+                <div class="bar-label">
+                    Investir
+                </div>
+
             </div>
 
             <div class="bar-wrapper">
-                <div class="bar amort" id="barAmort"></div>
-                <div class="bar-label">Amortizar</div>
+
+                <div class="bar bar-amort"
+                id="barAmort"
+                style="height:20px;">
+                </div>
+
+                <div class="bar-label">
+                    Amortizar
+                </div>
+
             </div>
 
         </div>
@@ -363,23 +426,15 @@ td{
 
 <script>
 
-const CAMPOS = [
+const campos = [
     'saldo',
+    'parcela',
     'jurosFin',
     'jurosInv',
     'aporte',
     'anos',
     'inflacao'
 ];
-
-const VALORES_PADRAO = {
-    saldo: 250000,
-    jurosFin: 12,
-    jurosInv: 14,
-    aporte: 2000,
-    anos: 15,
-    inflacao: 4.5
-};
 
 function moeda(valor){
 
@@ -390,62 +445,54 @@ function moeda(valor){
 
 }
 
-function salvarDados(){
+function salvar(){
 
     const dados = {};
 
-    CAMPOS.forEach(id => {
+    campos.forEach(id => {
 
-        dados[id] = document.getElementById(id).value;
+        dados[id] =
+            document.getElementById(id).value;
 
     });
 
     localStorage.setItem(
-        'simuladorFinanceiroDados',
+        'simuladorFinanceiroPremium',
         JSON.stringify(dados)
     );
 
 }
 
-function carregarDados(){
+function carregar(){
 
-    const dadosSalvos =
-        localStorage.getItem('simuladorFinanceiroDados');
+    const dados =
+        localStorage.getItem(
+            'simuladorFinanceiroPremium'
+        );
 
-    if(dadosSalvos){
+    if(!dados) return;
 
-        const dados = JSON.parse(dadosSalvos);
+    const json = JSON.parse(dados);
 
-        CAMPOS.forEach(id => {
+    campos.forEach(id => {
 
-            document.getElementById(id).value =
-                dados[id] || VALORES_PADRAO[id];
-
-        });
-
-    }else{
-
-        CAMPOS.forEach(id => {
+        if(json[id]){
 
             document.getElementById(id).value =
-                VALORES_PADRAO[id];
+                json[id];
 
-        });
+        }
 
-    }
+    });
 
 }
 
 function ativarPersistencia(){
 
-    CAMPOS.forEach(id => {
+    campos.forEach(id => {
 
         document.getElementById(id)
-            .addEventListener('input', () => {
-
-                salvarDados();
-
-            });
+        .addEventListener('input', salvar);
 
     });
 
@@ -453,25 +500,42 @@ function ativarPersistencia(){
 
 function comparar(){
 
-    salvarDados();
+    salvar();
 
     const saldo =
-        parseFloat(document.getElementById('saldo').value);
+        parseFloat(
+            document.getElementById('saldo').value || 0
+        );
+
+    const parcela =
+        parseFloat(
+            document.getElementById('parcela').value || 0
+        );
 
     const jurosFin =
-        parseFloat(document.getElementById('jurosFin').value) / 100;
+        parseFloat(
+            document.getElementById('jurosFin').value || 0
+        ) / 100;
 
     const jurosInv =
-        parseFloat(document.getElementById('jurosInv').value) / 100;
+        parseFloat(
+            document.getElementById('jurosInv').value || 0
+        ) / 100;
 
     const aporte =
-        parseFloat(document.getElementById('aporte').value);
+        parseFloat(
+            document.getElementById('aporte').value || 0
+        );
 
     const anos =
-        parseFloat(document.getElementById('anos').value);
+        parseFloat(
+            document.getElementById('anos').value || 0
+        );
 
     const inflacao =
-        parseFloat(document.getElementById('inflacao').value) / 100;
+        parseFloat(
+            document.getElementById('inflacao').value || 0
+        ) / 100;
 
     const meses = anos * 12;
 
@@ -484,91 +548,151 @@ function comparar(){
     const taxaInflacaoMensal =
         Math.pow(1 + inflacao, 1/12) - 1;
 
-    let investimento = 0;
+    /*
+    ============================
+    CENÁRIO INVESTIMENTO
+    ============================
+    */
+
+    let patrimonioInvestido = 0;
 
     for(let i = 0; i < meses; i++){
 
-        investimento =
-            (investimento + aporte) *
-            (1 + taxaInvMensal);
+        patrimonioInvestido =
+            (patrimonioInvestido + aporte)
+            * (1 + taxaInvMensal);
 
     }
 
-    let economiaAmortizacao = 0;
+    /*
+    ============================
+    CENÁRIO AMORTIZAÇÃO
+    ============================
+    */
+
     let saldoAtual = saldo;
+    let totalPago = 0;
 
     for(let i = 0; i < meses; i++){
 
         const jurosMes =
             saldoAtual * taxaFinMensal;
 
-        economiaAmortizacao += jurosMes;
+        saldoAtual += jurosMes;
 
-        saldoAtual -= aporte;
+        saldoAtual -= (parcela + aporte);
+
+        totalPago += (parcela + aporte);
 
         if(saldoAtual <= 0){
 
+            saldoAtual = 0;
             break;
 
         }
 
     }
 
+    /*
+    ============================
+    AJUSTE INFLAÇÃO
+    ============================
+    */
+
     const investimentoReal =
-        investimento /
-        Math.pow(1 + taxaInflacaoMensal, meses);
+        patrimonioInvestido /
+        Math.pow(
+            1 + taxaInflacaoMensal,
+            meses
+        );
 
     const amortizacaoReal =
-        economiaAmortizacao /
-        Math.pow(1 + taxaInflacaoMensal, meses);
+        totalPago /
+        Math.pow(
+            1 + taxaInflacaoMensal,
+            meses
+        );
+
+    /*
+    ============================
+    RESULTADOS
+    ============================
+    */
 
     document.getElementById(
         'resultadoInvestimento'
-    ).innerText = moeda(investimentoReal);
+    ).innerText =
+        moeda(investimentoReal);
 
     document.getElementById(
         'resultadoAmortizacao'
-    ).innerText = moeda(amortizacaoReal);
+    ).innerText =
+        moeda(amortizacaoReal);
 
     document.getElementById(
         'linhaInvestir'
-    ).innerText = moeda(investimentoReal);
+    ).innerText =
+        moeda(investimentoReal);
 
     document.getElementById(
         'linhaAmortizar'
-    ).innerText = moeda(amortizacaoReal);
+    ).innerText =
+        moeda(amortizacaoReal);
 
-    const melhor =
-        investimentoReal > amortizacaoReal
-        ? 'Investir'
-        : 'Amortizar';
+    /*
+    ============================
+    MELHOR OPÇÃO
+    ============================
+    */
+
+    let melhor = '';
+
+    if(investimentoReal > amortizacaoReal){
+
+        melhor = 'Investir';
+
+    }else{
+
+        melhor = 'Amortizar';
+
+    }
 
     document.getElementById(
         'melhorOpcao'
     ).innerText = melhor;
 
+    /*
+    ============================
+    GRÁFICO
+    ============================
+    */
+
     const maior =
-        Math.max(investimentoReal, amortizacaoReal);
+        Math.max(
+            investimentoReal,
+            amortizacaoReal
+        );
 
     const alturaInvest =
-        (investimentoReal / maior) * 250;
+        (investimentoReal / maior) * 280;
 
     const alturaAmort =
-        (amortizacaoReal / maior) * 250;
+        (amortizacaoReal / maior) * 280;
 
     document.getElementById(
         'barInvest'
-    ).style.height = alturaInvest + 'px';
+    ).style.height =
+        alturaInvest + 'px';
 
     document.getElementById(
         'barAmort'
-    ).style.height = alturaAmort + 'px';
+    ).style.height =
+        alturaAmort + 'px';
 
 }
 
-carregarDados();
+carregar();
 ativarPersistencia();
-comparar();
 
 </script>
 
