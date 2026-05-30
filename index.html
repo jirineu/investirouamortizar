@@ -646,48 +646,43 @@ function limparSimulacao(){
 
 }
 
+
 function comparar(){
 
     salvar();
 
     const valorImovel =
-    parseFloat(valorImovelInput()) || 0;
+    parseFloat(valor('valorImovel')) || 0;
 
-    const saldo =
-    parseFloat(valor('saldo'));
-
-    const parcelasTotal =
-    parseFloat(valor('parcelasTotal'));
+    const saldoInicial =
+    parseFloat(valor('saldo')) || 0;
 
     const parcelasRestantes =
-    parseFloat(valor('parcelasRestantes'));
+    parseFloat(valor('parcelasRestantes')) || 0;
 
     const parcela =
-    parseFloat(valor('parcela'));
+    parseFloat(valor('parcela')) || 0;
 
     const jurosFin =
-    parseFloat(valor('jurosFin')) / 100;
+    parseFloat(valor('jurosFin')) / 100 || 0;
 
     const aporte =
-    parseFloat(valor('aporte'));
+    parseFloat(valor('aporte')) || 0;
 
     const jurosInv =
-    parseFloat(valor('jurosInv')) / 100;
+    parseFloat(valor('jurosInv')) / 100 || 0;
 
     const inflacao =
-    parseFloat(valor('inflacao')) / 100;
+    parseFloat(valor('inflacao')) / 100 || 0;
 
     const valorizacao =
-    parseFloat(valor('valorizacao')) / 100;
+    parseFloat(valor('valorizacao')) / 100 || 0;
 
     const anos =
-    parseFloat(valor('anos'));
+    parseFloat(valor('anos')) || 0;
 
     const sistema =
     valor('tipoSistema');
-
-    const metaQuitacao =
-    parseFloat(valor('metaQuitacao'));
 
     const meses = anos * 12;
 
@@ -701,260 +696,390 @@ function comparar(){
     Math.pow(1 + inflacao,1/12)-1;
 
     /*
-    ======================
-    INVESTIMENTO
-    ======================
+    ====================================================
+    VALORIZAÇÃO DO IMÓVEL
+    ====================================================
     */
 
-    let invest = 0;
+    const valorFuturoImovel =
+    valorImovel *
+    Math.pow(
+        1 + valorizacao,
+        anos
+    );
+
+    /*
+    ====================================================
+    CENÁRIO 1 — INVESTIR
+    ====================================================
+    */
+
+    let saldoInvestir =
+    saldoInicial;
+
+    let investimentos = 0;
+
     let totalInvestido = 0;
+
+    let jurosPagosInvestindo = 0;
 
     const evolucaoInvest = [];
 
     for(let i=0;i<meses;i++){
 
-        invest =
-        (invest + aporte) *
-        (1 + taxaInv);
-
-        totalInvestido += aporte;
-
-        evolucaoInvest.push(invest);
-
-    }
-
-    const jurosGanhos =
-    invest - totalInvestido;
-
-    const retornoReal =
-    invest /
-    Math.pow(1 + taxaInflacao,meses);
-
-    /*
-    ======================
-    AMORTIZAÇÃO
-    ======================
-    */
-
-    let saldoAtual = saldo;
-
-    let totalPago = 0;
-
-    let jurosTotal = 0;
-
-    let mesesQuitacao = 0;
-
-    let evolucaoDivida = [];
-
-    let amortizacaoConstante =
-    saldo / parcelasRestantes;
-
-    let parcelaPrice = parcela;
-
-    for(let i=0;i<parcelasRestantes;i++){
-
-        if(saldoAtual <= 0) break;
+        /*
+        ==========================
+        FINANCIAMENTO NORMAL
+        ==========================
+        */
 
         const jurosMes =
-        saldoAtual * taxaFin;
+        saldoInvestir * taxaFin;
 
-        jurosTotal += jurosMes;
+        jurosPagosInvestindo += jurosMes;
 
         let amortizacao = 0;
-
-        let parcelaMes = 0;
 
         if(sistema === 'SAC'){
 
             amortizacao =
-            amortizacaoConstante + aporte;
-
-            parcelaMes =
-            amortizacao + jurosMes;
+            saldoInicial /
+            parcelasRestantes;
 
         }else{
 
-            parcelaMes =
-            parcelaPrice + aporte;
-
             amortizacao =
-            parcelaMes - jurosMes;
+            parcela - jurosMes;
 
         }
 
-        saldoAtual -= amortizacao;
+        saldoInvestir -= amortizacao;
 
-        totalPago += parcelaMes;
+        if(saldoInvestir < 0){
+
+            saldoInvestir = 0;
+
+        }
+
+        /*
+        ==========================
+        INVESTIMENTOS
+        ==========================
+        */
+
+        investimentos =
+        (investimentos + aporte)
+        * (1 + taxaInv);
+
+        totalInvestido += aporte;
+
+        /*
+        ==========================
+        PATRIMÔNIO
+        ==========================
+        */
+
+        const patrimonio =
+        valorFuturoImovel
+        + investimentos
+        - saldoInvestir;
+
+        evolucaoInvest.push(
+            patrimonio
+        );
+
+    }
+
+    /*
+    ====================================================
+    CENÁRIO 2 — AMORTIZAR
+    ====================================================
+    */
+
+    let saldoAmortizar =
+    saldoInicial;
+
+    let jurosPagosAmortizando = 0;
+
+    let mesesQuitacao = 0;
+
+    const evolucaoAmort = [];
+
+    for(let i=0;i<parcelasRestantes;i++){
+
+        if(saldoAmortizar <= 0){
+
+            saldoAmortizar = 0;
+            break;
+
+        }
+
+        const jurosMes =
+        saldoAmortizar * taxaFin;
+
+        jurosPagosAmortizando += jurosMes;
+
+        let amortizacao = 0;
+
+        if(sistema === 'SAC'){
+
+            amortizacao =
+            (saldoInicial / parcelasRestantes)
+            + aporte;
+
+        }else{
+
+            amortizacao =
+            (parcela + aporte)
+            - jurosMes;
+
+        }
+
+        saldoAmortizar -= amortizacao;
 
         mesesQuitacao++;
 
-        evolucaoDivida.push(
-            Math.max(saldoAtual,0)
+        if(saldoAmortizar < 0){
+
+            saldoAmortizar = 0;
+
+        }
+
+        /*
+        ==========================
+        PATRIMÔNIO
+        ==========================
+        */
+
+        const patrimonio =
+        valorFuturoImovel
+        - saldoAmortizar;
+
+        evolucaoAmort.push(
+            patrimonio
         );
 
     }
 
-    const prazoOriginal =
-    parcelasRestantes;
+    /*
+    ====================================================
+    PATRIMÔNIO FINAL
+    ====================================================
+    */
 
-    const reducao =
-    prazoOriginal - mesesQuitacao;
+    const patrimonioInvestindo =
+    valorFuturoImovel
+    + investimentos
+    - saldoInvestir;
+
+    const patrimonioAmortizando =
+    valorFuturoImovel
+    - saldoAmortizar;
+
+    /*
+    ====================================================
+    RETORNO REAL
+    ====================================================
+    */
+
+    const retornoRealInvest =
+    patrimonioInvestindo /
+    Math.pow(
+        1 + taxaInflacao,
+        meses
+    );
+
+    const retornoRealAmort =
+    patrimonioAmortizando /
+    Math.pow(
+        1 + taxaInflacao,
+        meses
+    );
+
+    /*
+    ====================================================
+    ECONOMIA DE JUROS
+    ====================================================
+    */
 
     const economiaJuros =
-    (parcela * parcelasRestantes)
-    - totalPago;
-
-    const valorFuturoImovel =
-    valorImovel *
-    Math.pow(1 + valorizacao,anos);
-
-    const patrimonioAmort =
-    valorFuturoImovel - saldoAtual;
+    jurosPagosInvestindo
+    - jurosPagosAmortizando;
 
     /*
-    ======================
-    META QUITAÇÃO
-    ======================
+    ====================================================
+    MELHOR ESTRATÉGIA
+    ====================================================
     */
 
-    if(metaQuitacao){
-
-        const metaMeses =
-        metaQuitacao * 12;
-
-        const amortNecessaria =
-        ((saldo * taxaFin) /
-        (1 - Math.pow(
-            1 + taxaFin,
-            -metaMeses
-        ))) - parcela;
-
-        document.getElementById(
-            'resultadoMeta'
-        ).innerHTML =
-        `
-        Para quitar em
-        <strong>${metaQuitacao} anos</strong>,
-        você precisa amortizar aproximadamente
-        <strong>${moeda(
-            Math.max(amortNecessaria,0)
-        )}/mês</strong>.
-        `;
-
-    }
+    const melhor =
+    patrimonioInvestindo >
+    patrimonioAmortizando
+    ? 'Investir'
+    : 'Amortizar';
 
     /*
-    ======================
-    MELHOR
-    ======================
-    */
-
-    let melhor = '';
-
-    if(retornoReal > patrimonioAmort){
-
-        melhor = 'Investir';
-
-    }else{
-
-        melhor = 'Amortizar';
-
-    }
-
-    /*
-    ======================
+    ====================================================
     RESULTADOS
-    ======================
+    ====================================================
     */
 
-    set('economiaJuros',
-    moeda(Math.max(economiaJuros,0)));
+    set(
+        'economiaJuros',
+        moeda(economiaJuros)
+    );
 
-    set('tempoReduzido',
-    `${Math.floor(reducao/12)}a ${reducao%12}m`);
+    set(
+        'tempoReduzido',
+        `${Math.floor(
+            (parcelasRestantes - mesesQuitacao)/12
+        )}a ${
+            (parcelasRestantes - mesesQuitacao)%12
+        }m`
+    );
 
-    set('patrimonioFinal',
-    moeda(
-        Math.max(
-            retornoReal,
-            patrimonioAmort
+    set(
+        'patrimonioFinal',
+        moeda(
+            Math.max(
+                patrimonioInvestindo,
+                patrimonioAmortizando
+            )
         )
-    ));
+    );
 
-    set('retornoReal',
-    moeda(retornoReal));
+    set(
+        'retornoReal',
+        moeda(
+            Math.max(
+                retornoRealInvest,
+                retornoRealAmort
+            )
+        )
+    );
 
-    set('quitacao',
-    `${Math.floor(mesesQuitacao/12)}a ${mesesQuitacao%12}m`);
+    set(
+        'quitacao',
+        `${Math.floor(mesesQuitacao/12)}a ${
+            mesesQuitacao%12
+        }m`
+    );
 
     set('melhor',melhor);
 
-    set('totalInvestido',
-    moeda(totalInvestido));
-
-    set('jurosGanhos',
-    moeda(jurosGanhos));
-
-    set('patrimonioInvest',
-    moeda(invest));
-
-    set('retornoInvest',
-    moeda(retornoReal));
-
-    set('saldoQuitado',
-    moeda(saldo - saldoAtual));
-
-    set('jurosEconomizados',
-    moeda(Math.max(economiaJuros,0)));
-
-    set('valorizacaoImovel',
-    moeda(valorFuturoImovel));
-
-    set('patrimonioAmort',
-    moeda(patrimonioAmort));
-
     /*
-    ======================
-    ALERTAS
-    ======================
+    ==========================
+    INVESTIR
+    ==========================
     */
 
-    let analises = [];
+    set(
+        'totalInvestido',
+        moeda(totalInvestido)
+    );
 
-    if(retornoReal > patrimonioAmort){
+    set(
+        'jurosGanhos',
+        moeda(
+            investimentos - totalInvestido
+        )
+    );
 
-        analises.push(
-        'Investir tende a gerar maior patrimônio líquido no longo prazo.'
+    set(
+        'patrimonioInvest',
+        moeda(
+            patrimonioInvestindo
+        )
+    );
+
+    set(
+        'retornoInvest',
+        moeda(
+            retornoRealInvest
+        )
+    );
+
+    /*
+    ==========================
+    AMORTIZAR
+    ==========================
+    */
+
+    set(
+        'saldoQuitado',
+        moeda(
+            saldoInicial - saldoAmortizar
+        )
+    );
+
+    set(
+        'jurosEconomizados',
+        moeda(economiaJuros)
+    );
+
+    set(
+        'valorizacaoImovel',
+        moeda(valorFuturoImovel)
+    );
+
+    set(
+        'patrimonioAmort',
+        moeda(
+            patrimonioAmortizando
+        )
+    );
+
+    /*
+    ====================================================
+    ALERTAS INTELIGENTES
+    ====================================================
+    */
+
+    let alertas = [];
+
+    if(
+        patrimonioInvestindo >
+        patrimonioAmortizando
+    ){
+
+        alertas.push(
+        'Investir gerou maior patrimônio líquido no período analisado.'
         );
 
     }else{
 
-        analises.push(
-        'Amortizar reduz drasticamente os juros totais do financiamento.'
+        alertas.push(
+        'Amortizar gerou maior patrimônio líquido e reduziu significativamente os juros.'
         );
 
     }
 
-    if(inflacao > 0.05){
+    if(
+        jurosInv > jurosFin
+    ){
 
-        analises.push(
-        'A inflação reduz significativamente o retorno real do patrimônio.'
+        alertas.push(
+        'A rentabilidade do investimento está acima do custo efetivo do financiamento.'
         );
 
     }
 
-    if(aporte > parcela){
+    if(
+        inflacao > 0.06
+    ){
 
-        analises.push(
-        'Sua amortização agressiva acelera fortemente a quitação.'
+        alertas.push(
+        'A inflação reduz o ganho real do patrimônio ao longo do tempo.'
         );
 
     }
 
-    if(jurosInv > jurosFin){
+    if(
+        mesesQuitacao < meses
+    ){
 
-        analises.push(
-        'A rentabilidade do investimento supera o custo do financiamento.'
+        alertas.push(
+        'A amortização permite quitar o imóvel antes do prazo da simulação.'
         );
 
     }
@@ -962,23 +1087,21 @@ function comparar(){
     document.getElementById(
         'analise'
     ).innerHTML =
-    analises.map(a =>
-        `<div class="alert">• ${a}</div>`
+    alertas.map(alerta =>
+        `<div class="alert">• ${alerta}</div>`
     ).join('');
 
     /*
-    ======================
+    ====================================================
     GRÁFICO
-    ======================
+    ====================================================
     */
 
     const labels = [];
 
     for(let i=1;i<=meses;i++){
 
-        labels.push(
-            `${i}m`
-        );
+        labels.push(`${i}m`);
 
     }
 
@@ -993,7 +1116,7 @@ function comparar(){
         {
             type:'line',
             data:{
-                labels:labels,
+                labels,
                 datasets:[
                     {
                         label:'Patrimônio Investindo',
@@ -1002,8 +1125,8 @@ function comparar(){
                         tension:0.35
                     },
                     {
-                        label:'Saldo da Dívida',
-                        data:evolucaoDivida,
+                        label:'Patrimônio Amortizando',
+                        data:evolucaoAmort,
                         borderWidth:3,
                         tension:0.35
                     }
@@ -1011,6 +1134,10 @@ function comparar(){
             },
             options:{
                 responsive:true,
+                interaction:{
+                    intersect:false,
+                    mode:'index'
+                },
                 plugins:{
                     legend:{
                         labels:{
@@ -1018,13 +1145,9 @@ function comparar(){
                         }
                     }
                 },
-                interaction:{
-                    intersect:false,
-                    mode:'index'
-                },
                 scales:{
                     y:{
-                        beginAtZero:true
+                        beginAtZero:false
                     }
                 }
             }
