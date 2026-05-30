@@ -1,1186 +1,568 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Simulador Patrimonial Inteligente</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
-
-:root{
-    --bg:#eef3f9;
-    --card:rgba(255,255,255,0.72);
-    --primary:#2563eb;
-    --primary2:#1d4ed8;
-    --green:#10b981;
-    --red:#ef4444;
-    --text:#111827;
-    --muted:#6b7280;
-    --border:rgba(255,255,255,0.4);
-    --shadow:0 15px 45px rgba(0,0,0,0.08);
-    --radius:28px;
-}
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Inter,Arial,sans-serif;
 }
 
 body{
-    background:
-    radial-gradient(circle at top left,#dbeafe 0%,transparent 30%),
-    radial-gradient(circle at bottom right,#d1fae5 0%,transparent 30%),
-    var(--bg);
-
-    color:var(--text);
+    background:#0f172a;
+    font-family:Inter,Arial,sans-serif;
+    color:white;
     min-height:100vh;
-    padding:28px;
+    padding:30px;
 }
 
 .container{
-    max-width:1450px;
+    max-width:1200px;
     margin:auto;
 }
 
-.hero{
+.title{
+    font-size:32px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.subtitle{
+    color:#94a3b8;
     margin-bottom:30px;
-}
-
-.hero h1{
-    font-size:48px;
-    font-weight:800;
-    letter-spacing:-2px;
-    margin-bottom:14px;
-}
-
-.hero p{
-    max-width:780px;
-    line-height:1.7;
-    color:var(--muted);
-    font-size:18px;
-}
-
-.glass{
-    background:var(--card);
-    backdrop-filter:blur(18px);
-    border:1px solid var(--border);
-    box-shadow:var(--shadow);
-    border-radius:var(--radius);
-}
-
-.card{
-    padding:34px;
-    margin-bottom:26px;
 }
 
 .grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:22px;
-}
-
-.field{
-    display:flex;
-    flex-direction:column;
-}
-
-.field label{
-    font-size:13px;
-    font-weight:700;
-    color:#374151;
-    margin-bottom:10px;
-}
-
-.field input,
-.field select{
-    height:60px;
-    border:none;
-    border-radius:18px;
-    background:rgba(255,255,255,0.7);
-    padding:0 18px;
-    font-size:15px;
-    transition:0.25s;
-    border:1px solid rgba(255,255,255,0.5);
-}
-
-.field input:focus,
-.field select:focus{
-    outline:none;
-    transform:translateY(-1px);
-    border-color:#93c5fd;
-    box-shadow:0 0 0 4px rgba(37,99,235,0.08);
-    background:white;
-}
-
-.field input::placeholder{
-    color:#9ca3af;
-}
-
-.buttons{
-    display:flex;
     gap:18px;
-    margin-top:28px;
-    flex-wrap:wrap;
+}
+
+.card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:20px;
+    backdrop-filter:blur(12px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+label{
+    display:block;
+    font-size:13px;
+    margin-bottom:8px;
+    color:#cbd5e1;
+}
+
+input,select{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:#111827;
+    color:white;
+    font-size:15px;
+    outline:none;
+}
+
+input::placeholder{
+    color:#64748b;
 }
 
 button{
-    flex:1;
-    min-width:220px;
-    height:60px;
+    width:100%;
     border:none;
-    border-radius:18px;
-    cursor:pointer;
-    font-size:15px;
-    font-weight:700;
-    transition:0.25s;
-}
-
-.primary{
-    background:linear-gradient(135deg,var(--primary),var(--primary2));
+    padding:18px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
     color:white;
-}
-
-.secondary{
-    background:white;
-    color:#111827;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
 }
 
 button:hover{
-    transform:translateY(-2px);
+    opacity:0.9;
+    transform:scale(1.01);
 }
 
-.section-title{
-    font-size:26px;
-    margin-bottom:24px;
-    font-weight:800;
+.results{
+    margin-top:30px;
+    display:none;
 }
 
-.indicators{
+.result-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:22px;
-    margin-bottom:26px;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
 }
 
-.indicator{
-    padding:28px;
-    border-radius:24px;
-    background:rgba(255,255,255,0.78);
-    backdrop-filter:blur(16px);
-    box-shadow:var(--shadow);
-    transition:0.25s;
+.result-card{
+    background:rgba(255,255,255,0.05);
+    border-radius:20px;
+    padding:25px;
+    border:1px solid rgba(255,255,255,0.08);
 }
 
-.indicator:hover{
-    transform:translateY(-4px);
-}
-
-.indicator span{
-    font-size:13px;
-    color:var(--muted);
-}
-
-.indicator h2{
-    margin-top:12px;
-    font-size:30px;
-    line-height:1.2;
-}
-
-.highlight{
-    background:linear-gradient(135deg,#2563eb,#1d4ed8);
-    color:white;
-}
-
-.highlight span{
-    color:rgba(255,255,255,0.8);
-}
-
-.columns{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:26px;
-}
-
-.result-box{
-    padding:28px;
-    border-radius:24px;
-    background:rgba(255,255,255,0.75);
-    box-shadow:var(--shadow);
-}
-
-.result-box h3{
-    margin-bottom:20px;
-    font-size:24px;
+.result-card h3{
+    margin-bottom:18px;
+    font-size:20px;
 }
 
 .result-item{
-    display:flex;
-    justify-content:space-between;
-    padding:14px 0;
-    border-bottom:1px solid rgba(0,0,0,0.05);
-}
-
-.result-item:last-child{
-    border:none;
+    margin-bottom:14px;
 }
 
 .result-item span{
-    color:var(--muted);
+    display:block;
+    color:#94a3b8;
+    font-size:13px;
+    margin-bottom:4px;
+}
+
+.result-item strong{
+    font-size:22px;
+}
+
+.best{
+    margin-top:25px;
+    padding:25px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#059669,#10b981);
+    color:white;
+    text-align:center;
+    animation:fade 0.5s ease;
+}
+
+.best h2{
+    margin-bottom:10px;
 }
 
 .analysis{
-    margin-top:24px;
-    padding:26px;
-    border-radius:24px;
-    background:linear-gradient(135deg,#eff6ff,#ffffff);
-    line-height:1.8;
-}
-
-.alert{
-    margin-bottom:12px;
-}
-
-.chart-card{
-    padding:28px;
-    margin-top:26px;
-}
-
-canvas{
-    width:100% !important;
-    height:420px !important;
-}
-
-.footer-note{
     margin-top:20px;
-    color:#64748b;
-    font-size:14px;
+    line-height:1.7;
+    color:#cbd5e1;
 }
 
-.meta-box{
-    margin-top:24px;
-    padding:24px;
-    border-radius:24px;
-    background:rgba(255,255,255,0.7);
-}
-
-.meta-box h3{
-    margin-bottom:18px;
-}
-
-.meta-result{
-    margin-top:16px;
-    font-size:18px;
-    font-weight:700;
-    color:var(--primary);
-}
-
-@media(max-width:980px){
-
-    .columns{
-        grid-template-columns:1fr;
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(10px);
     }
-
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
-@media(max-width:768px){
-
+@media(max-width:700px){
     body{
-        padding:16px;
+        padding:18px;
     }
 
-    .hero h1{
-        font-size:36px;
+    .title{
+        font-size:25px;
     }
-
-    .card{
-        padding:22px;
-    }
-
-    .indicator h2{
-        font-size:24px;
-    }
-
 }
-
 </style>
 </head>
 <body>
 
 <div class="container">
 
-    <section class="hero">
+    <div class="title">
+        Simulador Patrimonial Inteligente
+    </div>
 
-        <h1>Simulador Patrimonial Inteligente</h1>
+    <div class="subtitle">
+        Compare investir ou amortizar seu financiamento imobiliário.
+    </div>
 
-        <p>
-            Compare investir ou amortizar financiamento
-            e descubra qual estratégia gera maior patrimônio líquido
-            ao longo do tempo.
-        </p>
+    <div class="grid">
 
-    </section>
-
-    <section class="glass card">
-
-        <div class="grid">
-
-            <div class="field">
-                <label>Valor do imóvel</label>
-                <input type="number" id="valorImovel"
-                placeholder="Ex: 450000">
-            </div>
-
-            <div class="field">
-                <label>Saldo devedor atual</label>
-                <input type="number" id="saldo"
-                placeholder="Ex: 190000">
-            </div>
-
-            <div class="field">
-                <label>Quantidade total de parcelas</label>
-                <input type="number" id="parcelasTotal"
-                placeholder="Ex: 420">
-            </div>
-
-            <div class="field">
-                <label>Parcelas restantes</label>
-                <input type="number" id="parcelasRestantes"
-                placeholder="Ex: 300">
-            </div>
-
-            <div class="field">
-                <label>Valor da parcela mensal</label>
-                <input type="number" id="parcela"
-                placeholder="Ex: 1159">
-            </div>
-
-            <div class="field">
-                <label>Juros financiamento (% ao ano)</label>
-                <input type="number" id="jurosFin"
-                placeholder="Ex: 6.5">
-            </div>
-
-            <div class="field">
-                <label>Valor mensal disponível</label>
-                <input type="number" id="aporte"
-                placeholder="Ex: 2000">
-            </div>
-
-            <div class="field">
-                <label>Rentabilidade investimento (% ao ano)</label>
-                <input type="number" id="jurosInv"
-                placeholder="Ex: 12">
-            </div>
-
-            <div class="field">
-                <label>Inflação anual (%)</label>
-                <input type="number" id="inflacao"
-                value="6"
-                placeholder="6">
-            </div>
-
-            <div class="field">
-                <label>Valorização imóvel (% ao ano)</label>
-                <input type="number" id="valorizacao"
-                placeholder="Ex: 7">
-            </div>
-
-            <div class="field">
-                <label>Tempo da simulação (anos)</label>
-                <input type="number" id="anos"
-                placeholder="Ex: 7">
-            </div>
-
-            <div class="field">
-                <label>Sistema de financiamento</label>
-                <select id="tipoSistema">
-                    <option value="SAC">SAC</option>
-                    <option value="PRICE">PRICE</option>
-                </select>
-            </div>
-
+        <div class="card">
+            <label>Valor atual do imóvel</label>
+            <input type="number" id="valorImovel" placeholder="Ex: 500000">
         </div>
 
-        <div class="meta-box">
+        <div class="card">
+            <label>Saldo devedor atual</label>
+            <input type="number" id="saldoDevedor" placeholder="Ex: 320000">
+        </div>
 
-            <h3>Modo Meta</h3>
+        <div class="card">
+            <label>Parcelas restantes</label>
+            <input type="number" id="parcelas" placeholder="Ex: 360">
+        </div>
 
-            <div class="grid">
+        <div class="card">
+            <label>Valor da parcela mensal</label>
+            <input type="number" id="parcela" placeholder="Ex: 2800">
+        </div>
 
-                <div class="field">
-                    <label>Quero quitar em X anos</label>
-                    <input type="number" id="metaQuitacao"
-                    placeholder="Ex: 8">
+        <div class="card">
+            <label>Taxa do financiamento (% ao ano)</label>
+            <input type="number" id="jurosFinanciamento" placeholder="Ex: 10">
+        </div>
+
+        <div class="card">
+            <label>Valor mensal disponível</label>
+            <input type="number" id="aporte" placeholder="Ex: 2000">
+        </div>
+
+        <div class="card">
+            <label>Rentabilidade do investimento (% ao ano)</label>
+            <input type="number" id="rentabilidade" placeholder="Ex: 12">
+        </div>
+
+        <div class="card">
+            <label>Valorização do imóvel (% ao ano)</label>
+            <input type="number" id="valorizacao" placeholder="Ex: 7">
+        </div>
+
+        <div class="card">
+            <label>Tempo da simulação (anos)</label>
+            <input type="number" id="anos" placeholder="Ex: 7">
+        </div>
+
+        <div class="card">
+            <label>Sistema</label>
+            <select id="sistema">
+                <option value="PRICE">PRICE</option>
+                <option value="SAC">SAC</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div style="margin-top:25px;">
+        <button onclick="simular()">
+            Simular Estratégias
+        </button>
+    </div>
+
+    <div class="results" id="results">
+
+        <div class="result-grid">
+
+            <div class="result-card">
+                <h3>📈 Investindo</h3>
+
+                <div class="result-item">
+                    <span>Total investido</span>
+                    <strong id="totalInvestido"></strong>
+                </div>
+
+                <div class="result-item">
+                    <span>Juros compostos ganhos</span>
+                    <strong id="jurosGanhos"></strong>
+                </div>
+
+                <div class="result-item">
+                    <span>Patrimônio investido final</span>
+                    <strong id="patrimonioInvestido"></strong>
+                </div>
+
+                <div class="result-item">
+                    <span>Valor futuro do imóvel</span>
+                    <strong id="imovelInvestindo"></strong>
                 </div>
 
             </div>
 
-            <div class="meta-result" id="resultadoMeta">
-                —
+            <div class="result-card">
+                <h3>🏠 Amortizando</h3>
+
+                <div class="result-item">
+                    <span>Juros economizados</span>
+                    <strong id="jurosEconomizados"></strong>
+                </div>
+
+                <div class="result-item">
+                    <span>Dívida quitada</span>
+                    <strong id="dividaQuitada"></strong>
+                </div>
+
+                <div class="result-item">
+                    <span>Novo prazo estimado</span>
+                    <strong id="novoPrazo"></strong>
+                </div>
+
+                <div class="result-item">
+                    <span>Valor futuro do imóvel</span>
+                    <strong id="imovelAmortizando"></strong>
+                </div>
+
             </div>
 
         </div>
 
-        <div class="buttons">
+        <div class="best" id="melhorOpcao"></div>
 
-            <button class="primary"
-            onclick="comparar()">
-                Comparar Estratégias
-            </button>
+        <div class="analysis" id="analysis"></div>
 
-            <button class="secondary"
-            onclick="limparSimulacao()">
-                Limpar Simulação
-            </button>
-
-        </div>
-
-        <div class="footer-note">
-            Todos os dados são salvos automaticamente no navegador.
-        </div>
-
-    </section>
-
-    <section class="indicators">
-
-        <div class="indicator">
-            <span>Economia de juros</span>
-            <h2 id="economiaJuros">—</h2>
-        </div>
-
-        <div class="indicator">
-            <span>Tempo reduzido</span>
-            <h2 id="tempoReduzido">—</h2>
-        </div>
-
-        <div class="indicator">
-            <span>Patrimônio líquido final</span>
-            <h2 id="patrimonioFinal">—</h2>
-        </div>
-
-        <div class="indicator">
-            <span>Retorno real</span>
-            <h2 id="retornoReal">—</h2>
-        </div>
-
-        <div class="indicator">
-            <span>Quitação estimada</span>
-            <h2 id="quitacao">—</h2>
-        </div>
-
-        <div class="indicator highlight">
-            <span>Melhor estratégia</span>
-            <h2 id="melhor">—</h2>
-        </div>
-
-    </section>
-
-    <section class="columns">
-
-        <div class="result-box">
-
-            <h3>Investindo</h3>
-
-            <div class="result-item">
-                <span>Total investido</span>
-                <strong id="totalInvestido">—</strong>
-            </div>
-
-            <div class="result-item">
-                <span>Juros compostos ganhos</span>
-                <strong id="jurosGanhos">—</strong>
-            </div>
-
-            <div class="result-item">
-                <span>Patrimônio acumulado</span>
-                <strong id="patrimonioInvest">—</strong>
-            </div>
-
-            <div class="result-item">
-                <span>Retorno real</span>
-                <strong id="retornoInvest">—</strong>
-            </div>
-
-        </div>
-
-        <div class="result-box">
-
-            <h3>Amortizando</h3>
-
-            <div class="result-item">
-                <span>Saldo quitado</span>
-                <strong id="saldoQuitado">—</strong>
-            </div>
-
-            <div class="result-item">
-                <span>Juros economizados</span>
-                <strong id="jurosEconomizados">—</strong>
-            </div>
-
-            <div class="result-item">
-                <span>Valorização do imóvel</span>
-                <strong id="valorizacaoImovel">—</strong>
-            </div>
-
-            <div class="result-item">
-                <span>Patrimônio líquido gerado</span>
-                <strong id="patrimonioAmort">—</strong>
-            </div>
-
-        </div>
-
-    </section>
-
-    <section class="glass chart-card">
-
-        <h2 class="section-title">
-            Evolução Patrimonial
-        </h2>
-
-        <canvas id="grafico"></canvas>
-
-        <div class="analysis" id="analise">
-
-            <div class="alert">Aguardando simulação...</div>
-
-        </div>
-
-    </section>
+    </div>
 
 </div>
 
 <script>
 
-let grafico;
-
-const campos = [
-    'valorImovel',
-    'saldo',
-    'parcelasTotal',
-    'parcelasRestantes',
-    'parcela',
-    'jurosFin',
-    'aporte',
-    'jurosInv',
-    'inflacao',
-    'valorizacao',
-    'anos',
-    'tipoSistema',
-    'metaQuitacao'
-];
-
-function moeda(v){
-
-    return v.toLocaleString('pt-BR',{
+function moeda(valor){
+    return valor.toLocaleString('pt-BR',{
         style:'currency',
         currency:'BRL'
     });
-
 }
 
-function salvar(){
+function simular(){
 
-    const dados = {};
-
-    campos.forEach(id => {
-
-        dados[id] =
-        document.getElementById(id).value;
-
-    });
-
-    localStorage.setItem(
-        'simuladorPatrimonialPremium',
-        JSON.stringify(dados)
-    );
-
-}
-
-function carregar(){
-
-    const dados =
-    localStorage.getItem(
-        'simuladorPatrimonialPremium'
-    );
-
-    if(!dados) return;
-
-    const json = JSON.parse(dados);
-
-    campos.forEach(id => {
-
-        if(json[id] !== undefined){
-
-            document.getElementById(id).value =
-            json[id];
-
-        }
-
-    });
-
-}
-
-function ativarPersistencia(){
-
-    campos.forEach(id => {
-
-        document.getElementById(id)
-        .addEventListener('input',salvar);
-
-    });
-
-}
-
-function limparSimulacao(){
-
-    localStorage.removeItem(
-        'simuladorPatrimonialPremium'
-    );
-
-    location.reload();
-
-}
-
-
-function comparar(){
-
-    salvar();
-
-    const valorImovel =
-    parseFloat(valor('valorImovel')) || 0;
-
-    const saldoInicial =
-    parseFloat(valor('saldo')) || 0;
-
-    const parcelasRestantes =
-    parseFloat(valor('parcelasRestantes')) || 0;
-
-    const parcela =
-    parseFloat(valor('parcela')) || 0;
-
-    const jurosFin =
-    parseFloat(valor('jurosFin')) / 100 || 0;
-
-    const aporte =
-    parseFloat(valor('aporte')) || 0;
-
-    const jurosInv =
-    parseFloat(valor('jurosInv')) / 100 || 0;
-
-    const inflacao =
-    parseFloat(valor('inflacao')) / 100 || 0;
-
-    const valorizacao =
-    parseFloat(valor('valorizacao')) / 100 || 0;
-
-    const anos =
-    parseFloat(valor('anos')) || 0;
-
-    const sistema =
-    valor('tipoSistema');
+    const valorImovel = Number(document.getElementById('valorImovel').value);
+    const saldoDevedor = Number(document.getElementById('saldoDevedor').value);
+    const parcelas = Number(document.getElementById('parcelas').value);
+    const parcela = Number(document.getElementById('parcela').value);
+    const jurosFinanciamento = Number(document.getElementById('jurosFinanciamento').value)/100;
+    const aporte = Number(document.getElementById('aporte').value);
+    const rentabilidade = Number(document.getElementById('rentabilidade').value)/100;
+    const valorizacao = Number(document.getElementById('valorizacao').value)/100;
+    const anos = Number(document.getElementById('anos').value);
+    const sistema = document.getElementById('sistema').value;
 
     const meses = anos * 12;
 
-    const taxaFin =
-    Math.pow(1 + jurosFin,1/12)-1;
+    // =========================
+    // INVESTIMENTO
+    // =========================
 
-    const taxaInv =
-    Math.pow(1 + jurosInv,1/12)-1;
+    let montante = 0;
 
-    const taxaInflacao =
-    Math.pow(1 + inflacao,1/12)-1;
-
-    /*
-    ====================================================
-    VALORIZAÇÃO DO IMÓVEL
-    ====================================================
-    */
-
-    const valorFuturoImovel =
-    valorImovel *
-    Math.pow(
-        1 + valorizacao,
-        anos
-    );
-
-    /*
-    ====================================================
-    CENÁRIO 1 — INVESTIR
-    ====================================================
-    */
-
-    let saldoInvestir =
-    saldoInicial;
-
-    let investimentos = 0;
-
-    let totalInvestido = 0;
-
-    let jurosPagosInvestindo = 0;
-
-    const evolucaoInvest = [];
+    const taxaMensalInvestimento = Math.pow(1 + rentabilidade,1/12)-1;
 
     for(let i=0;i<meses;i++){
-
-        /*
-        ==========================
-        FINANCIAMENTO NORMAL
-        ==========================
-        */
-
-        const jurosMes =
-        saldoInvestir * taxaFin;
-
-        jurosPagosInvestindo += jurosMes;
-
-        let amortizacao = 0;
-
-        if(sistema === 'SAC'){
-
-            amortizacao =
-            saldoInicial /
-            parcelasRestantes;
-
-        }else{
-
-            amortizacao =
-            parcela - jurosMes;
-
-        }
-
-        saldoInvestir -= amortizacao;
-
-        if(saldoInvestir < 0){
-
-            saldoInvestir = 0;
-
-        }
-
-        /*
-        ==========================
-        INVESTIMENTOS
-        ==========================
-        */
-
-        investimentos =
-        (investimentos + aporte)
-        * (1 + taxaInv);
-
-        totalInvestido += aporte;
-
-        /*
-        ==========================
-        PATRIMÔNIO
-        ==========================
-        */
-
-        const patrimonio =
-        valorFuturoImovel
-        + investimentos
-        - saldoInvestir;
-
-        evolucaoInvest.push(
-            patrimonio
-        );
-
+        montante = (montante + aporte) * (1 + taxaMensalInvestimento);
     }
 
-    /*
-    ====================================================
-    CENÁRIO 2 — AMORTIZAR
-    ====================================================
-    */
+    const totalInvestido = aporte * meses;
+    const jurosGanhos = montante - totalInvestido;
 
-    let saldoAmortizar =
-    saldoInicial;
+    // =========================
+    // VALORIZAÇÃO DO IMÓVEL
+    // =========================
 
+    const valorFuturoImovel =
+        valorImovel * Math.pow(1 + valorizacao,anos);
+
+    // =========================
+    // AMORTIZAÇÃO
+    // =========================
+
+    let saldo = saldoDevedor;
+    let jurosPagosNormal = 0;
     let jurosPagosAmortizando = 0;
+
+    const taxaMensalFinanciamento =
+        Math.pow(1 + jurosFinanciamento,1/12)-1;
 
     let mesesQuitacao = 0;
 
-    const evolucaoAmort = [];
+    if(sistema === "PRICE"){
 
-    for(let i=0;i<parcelasRestantes;i++){
+        let parcelaPrice =
+            saldo *
+            (
+                taxaMensalFinanciamento /
+                (1 - Math.pow(1+taxaMensalFinanciamento,-parcelas))
+            );
 
-        if(saldoAmortizar <= 0){
+        for(let i=0;i<parcelas;i++){
 
-            saldoAmortizar = 0;
-            break;
+            let juros = saldo * taxaMensalFinanciamento;
+            jurosPagosNormal += juros;
 
-        }
-
-        const jurosMes =
-        saldoAmortizar * taxaFin;
-
-        jurosPagosAmortizando += jurosMes;
-
-        let amortizacao = 0;
-
-        if(sistema === 'SAC'){
-
-            amortizacao =
-            (saldoInicial / parcelasRestantes)
-            + aporte;
-
-        }else{
-
-            amortizacao =
-            (parcela + aporte)
-            - jurosMes;
+            saldo -= (parcelaPrice - juros);
 
         }
 
-        saldoAmortizar -= amortizacao;
+        saldo = saldoDevedor;
 
-        mesesQuitacao++;
+        while(saldo > 0){
 
-        if(saldoAmortizar < 0){
+            let juros = saldo * taxaMensalFinanciamento;
 
-            saldoAmortizar = 0;
+            jurosPagosAmortizando += juros;
 
+            let amortizacao =
+                (parcelaPrice + aporte) - juros;
+
+            saldo -= amortizacao;
+
+            mesesQuitacao++;
+
+            if(mesesQuitacao > 1000) break;
         }
-
-        /*
-        ==========================
-        PATRIMÔNIO
-        ==========================
-        */
-
-        const patrimonio =
-        valorFuturoImovel
-        - saldoAmortizar;
-
-        evolucaoAmort.push(
-            patrimonio
-        );
-
-    }
-
-    /*
-    ====================================================
-    PATRIMÔNIO FINAL
-    ====================================================
-    */
-
-    const patrimonioInvestindo =
-    valorFuturoImovel
-    + investimentos
-    - saldoInvestir;
-
-    const patrimonioAmortizando =
-    valorFuturoImovel
-    - saldoAmortizar;
-
-    /*
-    ====================================================
-    RETORNO REAL
-    ====================================================
-    */
-
-    const retornoRealInvest =
-    patrimonioInvestindo /
-    Math.pow(
-        1 + taxaInflacao,
-        meses
-    );
-
-    const retornoRealAmort =
-    patrimonioAmortizando /
-    Math.pow(
-        1 + taxaInflacao,
-        meses
-    );
-
-    /*
-    ====================================================
-    ECONOMIA DE JUROS
-    ====================================================
-    */
-
-    const economiaJuros =
-    jurosPagosInvestindo
-    - jurosPagosAmortizando;
-
-    /*
-    ====================================================
-    MELHOR ESTRATÉGIA
-    ====================================================
-    */
-
-    const melhor =
-    patrimonioInvestindo >
-    patrimonioAmortizando
-    ? 'Investir'
-    : 'Amortizar';
-
-    /*
-    ====================================================
-    RESULTADOS
-    ====================================================
-    */
-
-    set(
-        'economiaJuros',
-        moeda(economiaJuros)
-    );
-
-    set(
-        'tempoReduzido',
-        `${Math.floor(
-            (parcelasRestantes - mesesQuitacao)/12
-        )}a ${
-            (parcelasRestantes - mesesQuitacao)%12
-        }m`
-    );
-
-    set(
-        'patrimonioFinal',
-        moeda(
-            Math.max(
-                patrimonioInvestindo,
-                patrimonioAmortizando
-            )
-        )
-    );
-
-    set(
-        'retornoReal',
-        moeda(
-            Math.max(
-                retornoRealInvest,
-                retornoRealAmort
-            )
-        )
-    );
-
-    set(
-        'quitacao',
-        `${Math.floor(mesesQuitacao/12)}a ${
-            mesesQuitacao%12
-        }m`
-    );
-
-    set('melhor',melhor);
-
-    /*
-    ==========================
-    INVESTIR
-    ==========================
-    */
-
-    set(
-        'totalInvestido',
-        moeda(totalInvestido)
-    );
-
-    set(
-        'jurosGanhos',
-        moeda(
-            investimentos - totalInvestido
-        )
-    );
-
-    set(
-        'patrimonioInvest',
-        moeda(
-            patrimonioInvestindo
-        )
-    );
-
-    set(
-        'retornoInvest',
-        moeda(
-            retornoRealInvest
-        )
-    );
-
-    /*
-    ==========================
-    AMORTIZAR
-    ==========================
-    */
-
-    set(
-        'saldoQuitado',
-        moeda(
-            saldoInicial - saldoAmortizar
-        )
-    );
-
-    set(
-        'jurosEconomizados',
-        moeda(economiaJuros)
-    );
-
-    set(
-        'valorizacaoImovel',
-        moeda(valorFuturoImovel)
-    );
-
-    set(
-        'patrimonioAmort',
-        moeda(
-            patrimonioAmortizando
-        )
-    );
-
-    /*
-    ====================================================
-    ALERTAS INTELIGENTES
-    ====================================================
-    */
-
-    let alertas = [];
-
-    if(
-        patrimonioInvestindo >
-        patrimonioAmortizando
-    ){
-
-        alertas.push(
-        'Investir gerou maior patrimônio líquido no período analisado.'
-        );
 
     }else{
 
-        alertas.push(
-        'Amortizar gerou maior patrimônio líquido e reduziu significativamente os juros.'
-        );
+        let amortizacaoConstante =
+            saldoDevedor / parcelas;
 
-    }
+        saldo = saldoDevedor;
 
-    if(
-        jurosInv > jurosFin
-    ){
+        for(let i=0;i<parcelas;i++){
 
-        alertas.push(
-        'A rentabilidade do investimento está acima do custo efetivo do financiamento.'
-        );
+            let juros = saldo * taxaMensalFinanciamento;
 
-    }
+            jurosPagosNormal += juros;
 
-    if(
-        inflacao > 0.06
-    ){
+            saldo -= amortizacaoConstante;
 
-        alertas.push(
-        'A inflação reduz o ganho real do patrimônio ao longo do tempo.'
-        );
-
-    }
-
-    if(
-        mesesQuitacao < meses
-    ){
-
-        alertas.push(
-        'A amortização permite quitar o imóvel antes do prazo da simulação.'
-        );
-
-    }
-
-    document.getElementById(
-        'analise'
-    ).innerHTML =
-    alertas.map(alerta =>
-        `<div class="alert">• ${alerta}</div>`
-    ).join('');
-
-    /*
-    ====================================================
-    GRÁFICO
-    ====================================================
-    */
-
-    const labels = [];
-
-    for(let i=1;i<=meses;i++){
-
-        labels.push(`${i}m`);
-
-    }
-
-    if(grafico){
-
-        grafico.destroy();
-
-    }
-
-    grafico = new Chart(
-        document.getElementById('grafico'),
-        {
-            type:'line',
-            data:{
-                labels,
-                datasets:[
-                    {
-                        label:'Patrimônio Investindo',
-                        data:evolucaoInvest,
-                        borderWidth:3,
-                        tension:0.35
-                    },
-                    {
-                        label:'Patrimônio Amortizando',
-                        data:evolucaoAmort,
-                        borderWidth:3,
-                        tension:0.35
-                    }
-                ]
-            },
-            options:{
-                responsive:true,
-                interaction:{
-                    intersect:false,
-                    mode:'index'
-                },
-                plugins:{
-                    legend:{
-                        labels:{
-                            usePointStyle:true
-                        }
-                    }
-                },
-                scales:{
-                    y:{
-                        beginAtZero:false
-                    }
-                }
-            }
         }
-    );
+
+        saldo = saldoDevedor;
+
+        while(saldo > 0){
+
+            let amortizacaoMensal =
+                (saldoDevedor/parcelas) + aporte;
+
+            let juros = saldo * taxaMensalFinanciamento;
+
+            jurosPagosAmortizando += juros;
+
+            saldo -= amortizacaoMensal;
+
+            mesesQuitacao++;
+
+            if(mesesQuitacao > 1000) break;
+        }
+
+    }
+
+    const jurosEconomizados =
+        jurosPagosNormal - jurosPagosAmortizando;
+
+    const anosQuitacao =
+        Math.floor(mesesQuitacao/12);
+
+    const mesesRestantes =
+        mesesQuitacao % 12;
+
+    // =========================
+    // COMPARAÇÃO FINAL
+    // =========================
+
+    const patrimonioInvestir =
+        valorFuturoImovel + montante;
+
+    const patrimonioAmortizar =
+        valorFuturoImovel + jurosEconomizados;
+
+    let melhor = "";
+
+    if(patrimonioInvestir > patrimonioAmortizar){
+
+        melhor = `
+            <h2>📈 Melhor Estratégia: INVESTIR</h2>
+            <p>
+                O investimento gerou maior crescimento patrimonial
+                no período analisado.
+            </p>
+        `;
+
+    }else{
+
+        melhor = `
+            <h2>🏠 Melhor Estratégia: AMORTIZAR</h2>
+            <p>
+                A economia de juros compensou mais do que investir.
+            </p>
+        `;
+    }
+
+    // =========================
+    // ANÁLISE INTELIGENTE
+    // =========================
+
+    let analise = "";
+
+    if(rentabilidade > jurosFinanciamento){
+
+        analise += `
+        • Sua rentabilidade anual está acima do custo do financiamento.<br><br>
+        `;
+
+    }else{
+
+        analise += `
+        • O financiamento possui juros altos em relação ao investimento.<br><br>
+        `;
+    }
+
+    if(mesesQuitacao < parcelas){
+
+        analise += `
+        • A amortização reduziria significativamente o prazo do financiamento.<br><br>
+        `;
+    }
+
+    if(jurosEconomizados > jurosGanhos){
+
+        analise += `
+        • A economia de juros foi maior que o rendimento do investimento.<br><br>
+        `;
+    }else{
+
+        analise += `
+        • Os juros compostos superaram a economia obtida na amortização.<br><br>
+        `;
+    }
+
+    // =========================
+    // EXIBIÇÃO
+    // =========================
+
+    document.getElementById('results').style.display='block';
+
+    document.getElementById('totalInvestido').innerHTML =
+        moeda(totalInvestido);
+
+    document.getElementById('jurosGanhos').innerHTML =
+        moeda(jurosGanhos);
+
+    document.getElementById('patrimonioInvestido').innerHTML =
+        moeda(montante);
+
+    document.getElementById('imovelInvestindo').innerHTML =
+        moeda(valorFuturoImovel);
+
+    document.getElementById('jurosEconomizados').innerHTML =
+        moeda(jurosEconomizados);
+
+    document.getElementById('dividaQuitada').innerHTML =
+        moeda(saldoDevedor);
+
+    document.getElementById('novoPrazo').innerHTML =
+        `${anosQuitacao} anos e ${mesesRestantes} meses`;
+
+    document.getElementById('imovelAmortizando').innerHTML =
+        moeda(valorFuturoImovel);
+
+    document.getElementById('melhorOpcao').innerHTML =
+        melhor;
+
+    document.getElementById('analysis').innerHTML =
+        analise;
 
 }
-
-function valor(id){
-
-    return document
-    .getElementById(id)
-    .value || 0;
-
-}
-
-function valorImovelInput(){
-
-    return document
-    .getElementById('valorImovel')
-    .value || 0;
-
-}
-
-function set(id,valor){
-
-    document.getElementById(id)
-    .innerText = valor;
-
-}
-
-carregar();
-ativarPersistencia();
 
 </script>
 
