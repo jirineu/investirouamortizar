@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Simulador Inteligente Financeiro</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    color:#1f2937;
+    padding:30px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.hero{
+    margin-bottom:30px;
+}
+
+.hero h1{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+.hero p{
+    color:#6b7280;
+    font-size:18px;
+}
+
+.card{
+    background:white;
+    border-radius:24px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom:25px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field label{
+    margin-bottom:8px;
+    color:#4b5563;
+    font-size:14px;
+}
+
+.field input{
+    padding:15px;
+    border-radius:14px;
+    border:1px solid #dbe2ea;
+    background:#f9fbfd;
+    font-size:16px;
+    transition:0.2s;
+}
+
+.field input:focus{
+    outline:none;
+    border-color:#2563eb;
+    background:white;
+}
+
+button{
+    width:100%;
+    margin-top:30px;
+    padding:18px;
+    border:none;
+    border-radius:16px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    transform:translateY(-1px);
+}
+
+.results{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.result-card{
+    background:white;
+    padding:25px;
+    border-radius:22px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+
+.result-card span{
+    color:#6b7280;
+    font-size:14px;
+}
+
+.result-card h2{
+    margin-top:10px;
+    font-size:32px;
+}
+
+.result-card.highlight{
+    background:#2563eb;
+    color:white;
+}
+
+.result-card.highlight span{
+    color:rgba(255,255,255,0.8);
+}
+
+.section-title{
+    font-size:22px;
+    margin-bottom:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+th{
+    text-align:left;
+    background:#eef3ff;
+    padding:16px;
+    color:#374151;
+}
+
+td{
+    padding:16px;
+    border-bottom:1px solid #edf1f5;
+}
+
+.tag{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:999px;
+    background:#eef4ff;
+    color:#2563eb;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+.note{
+    margin-top:20px;
+    color:#6b7280;
+    line-height:1.6;
+}
+
+.chart{
+    margin-top:30px;
+    height:300px;
+    display:flex;
+    align-items:flex-end;
+    gap:20px;
+}
+
+.bar-wrapper{
+    flex:1;
+    text-align:center;
+}
+
+.bar{
+    width:100%;
+    border-radius:16px 16px 0 0;
+    transition:0.4s;
+}
+
+.bar.invest{
+    background:#2563eb;
+}
+
+.bar.amort{
+    background:#10b981;
+}
+
+.bar-label{
+    margin-top:10px;
+    font-size:14px;
+}
+
+.storage-info{
+    margin-top:18px;
+    color:#64748b;
+    font-size:14px;
+}
+
+@media(max-width:700px){
+
+    body{
+        padding:18px;
+    }
+
+    .hero h1{
+        font-size:32px;
+    }
+
+    .card{
+        padding:22px;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <section class="hero">
+        <h1>Simulador Inteligente</h1>
+
+        <p>
+            Compare automaticamente se vale mais a pena
+            investir ou amortizar seu financiamento.
+        </p>
+    </section>
+
+    <section class="card">
+
+        <div class="grid">
+
+            <div class="field">
+                <label>Saldo devedor (R$)</label>
+                <input type="number" id="saldo">
+            </div>
+
+            <div class="field">
+                <label>Juros do financiamento (% ao ano)</label>
+                <input type="number" id="jurosFin">
+            </div>
+
+            <div class="field">
+                <label>Rentabilidade do investimento (% ao ano)</label>
+                <input type="number" id="jurosInv">
+            </div>
+
+            <div class="field">
+                <label>Aporte mensal extra (R$)</label>
+                <input type="number" id="aporte">
+            </div>
+
+            <div class="field">
+                <label>Prazo restante (anos)</label>
+                <input type="number" id="anos">
+            </div>
+
+            <div class="field">
+                <label>Inflação anual (%)</label>
+                <input type="number" id="inflacao">
+            </div>
+
+        </div>
+
+        <button onclick="comparar()">
+            Comparar Cenários
+        </button>
+
+        <div class="storage-info">
+            Os dados são salvos automaticamente no navegador.
+        </div>
+
+    </section>
+
+    <section class="results">
+
+        <div class="result-card">
+            <span>Patrimônio investindo</span>
+            <h2 id="resultadoInvestimento">R$ 0</h2>
+        </div>
+
+        <div class="result-card">
+            <span>Economia amortizando</span>
+            <h2 id="resultadoAmortizacao">R$ 0</h2>
+        </div>
+
+        <div class="result-card highlight">
+            <span>Melhor estratégia</span>
+            <h2 id="melhorOpcao">—</h2>
+        </div>
+
+    </section>
+
+    <section class="card">
+
+        <h2 class="section-title">
+            Tabela Comparativa
+        </h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Estratégia</th>
+                    <th>Resultado estimado</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>Investir</td>
+                    <td id="linhaInvestir">—</td>
+                </tr>
+
+                <tr>
+                    <td>Amortizar</td>
+                    <td id="linhaAmortizar">—</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <div class="tag">
+            Inflação editável automaticamente
+        </div>
+
+        <div class="note">
+            O sistema considera inflação para mostrar
+            projeções mais próximas do poder real de compra.
+        </div>
+
+        <div class="chart">
+
+            <div class="bar-wrapper">
+                <div class="bar invest" id="barInvest"></div>
+                <div class="bar-label">Investir</div>
+            </div>
+
+            <div class="bar-wrapper">
+                <div class="bar amort" id="barAmort"></div>
+                <div class="bar-label">Amortizar</div>
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+
+const CAMPOS = [
+    'saldo',
+    'jurosFin',
+    'jurosInv',
+    'aporte',
+    'anos',
+    'inflacao'
+];
+
+const VALORES_PADRAO = {
+    saldo: 250000,
+    jurosFin: 12,
+    jurosInv: 14,
+    aporte: 2000,
+    anos: 15,
+    inflacao: 4.5
+};
+
+function moeda(valor){
+
+    return valor.toLocaleString('pt-BR',{
+        style:'currency',
+        currency:'BRL'
+    });
+
+}
+
+function salvarDados(){
+
+    const dados = {};
+
+    CAMPOS.forEach(id => {
+
+        dados[id] = document.getElementById(id).value;
+
+    });
+
+    localStorage.setItem(
+        'simuladorFinanceiroDados',
+        JSON.stringify(dados)
+    );
+
+}
+
+function carregarDados(){
+
+    const dadosSalvos =
+        localStorage.getItem('simuladorFinanceiroDados');
+
+    if(dadosSalvos){
+
+        const dados = JSON.parse(dadosSalvos);
+
+        CAMPOS.forEach(id => {
+
+            document.getElementById(id).value =
+                dados[id] || VALORES_PADRAO[id];
+
+        });
+
+    }else{
+
+        CAMPOS.forEach(id => {
+
+            document.getElementById(id).value =
+                VALORES_PADRAO[id];
+
+        });
+
+    }
+
+}
+
+function ativarPersistencia(){
+
+    CAMPOS.forEach(id => {
+
+        document.getElementById(id)
+            .addEventListener('input', () => {
+
+                salvarDados();
+
+            });
+
+    });
+
+}
+
+function comparar(){
+
+    salvarDados();
+
+    const saldo =
+        parseFloat(document.getElementById('saldo').value);
+
+    const jurosFin =
+        parseFloat(document.getElementById('jurosFin').value) / 100;
+
+    const jurosInv =
+        parseFloat(document.getElementById('jurosInv').value) / 100;
+
+    const aporte =
+        parseFloat(document.getElementById('aporte').value);
+
+    const anos =
+        parseFloat(document.getElementById('anos').value);
+
+    const inflacao =
+        parseFloat(document.getElementById('inflacao').value) / 100;
+
+    const meses = anos * 12;
+
+    const taxaInvMensal =
+        Math.pow(1 + jurosInv, 1/12) - 1;
+
+    const taxaFinMensal =
+        Math.pow(1 + jurosFin, 1/12) - 1;
+
+    const taxaInflacaoMensal =
+        Math.pow(1 + inflacao, 1/12) - 1;
+
+    let investimento = 0;
+
+    for(let i = 0; i < meses; i++){
+
+        investimento =
+            (investimento + aporte) *
+            (1 + taxaInvMensal);
+
+    }
+
+    let economiaAmortizacao = 0;
+    let saldoAtual = saldo;
+
+    for(let i = 0; i < meses; i++){
+
+        const jurosMes =
+            saldoAtual * taxaFinMensal;
+
+        economiaAmortizacao += jurosMes;
+
+        saldoAtual -= aporte;
+
+        if(saldoAtual <= 0){
+
+            break;
+
+        }
+
+    }
+
+    const investimentoReal =
+        investimento /
+        Math.pow(1 + taxaInflacaoMensal, meses);
+
+    const amortizacaoReal =
+        economiaAmortizacao /
+        Math.pow(1 + taxaInflacaoMensal, meses);
+
+    document.getElementById(
+        'resultadoInvestimento'
+    ).innerText = moeda(investimentoReal);
+
+    document.getElementById(
+        'resultadoAmortizacao'
+    ).innerText = moeda(amortizacaoReal);
+
+    document.getElementById(
+        'linhaInvestir'
+    ).innerText = moeda(investimentoReal);
+
+    document.getElementById(
+        'linhaAmortizar'
+    ).innerText = moeda(amortizacaoReal);
+
+    const melhor =
+        investimentoReal > amortizacaoReal
+        ? 'Investir'
+        : 'Amortizar';
+
+    document.getElementById(
+        'melhorOpcao'
+    ).innerText = melhor;
+
+    const maior =
+        Math.max(investimentoReal, amortizacaoReal);
+
+    const alturaInvest =
+        (investimentoReal / maior) * 250;
+
+    const alturaAmort =
+        (amortizacaoReal / maior) * 250;
+
+    document.getElementById(
+        'barInvest'
+    ).style.height = alturaInvest + 'px';
+
+    document.getElementById(
+        'barAmort'
+    ).style.height = alturaAmort + 'px';
+
+}
+
+carregarDados();
+ativarPersistencia();
+comparar();
+
+</script>
+
+</body>
+</html>
